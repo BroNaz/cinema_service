@@ -6,6 +6,9 @@ class Person(models.Model):
     name = models.CharField('Name', max_length=255)
     last_name = models.CharField('Last name', max_length=255)
 
+    def __str__(self):
+        return f'{self.name} {self.last_name}'
+
     class Meta:
         db_table = 'person'
 
@@ -17,6 +20,9 @@ class Film(models.Model):
                                     on_delete=models.CASCADE, related_name='producer') # возможно придется менять to
     actors = models.ManyToManyField(to=Person, verbose_name='Actors', related_name='actors')
 
+    def __str__(self):
+        return f'{self.name}'
+
     class Meta:
         db_table = 'film'
 
@@ -25,6 +31,9 @@ class FilmInfo(models.Model):
     date = models.DateField('Date')
     number_of_views = models.IntegerField('number of views')
     film = models.ForeignKey(to='Film', verbose_name='Film', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.film}'
     
     class Meta:
         db_table = 'film_info'
