@@ -1,3 +1,8 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 
-# Create your views here.
+def get_a_list_of_movies(request):
+    return JsonResponse({'success': True, 'name': 'get_a_list_of_movies'})
+
+def get_popular_movies(request):
+    return JsonResponse({'success': True, 'name': 'get_popular_movies'})
