@@ -10,6 +10,11 @@ class Person(models.Model):
     def __str__(self):
         return f'{self.name} {self.last_name}'
 
+    def as_json(self):
+        return dict(
+            name = self.name,
+            last_name=self.last_name)
+
     class Meta:
         db_table = 'person'
 
@@ -23,6 +28,14 @@ class Film(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+    def as_json(self):
+        return dict(
+            name = self.name,
+            release_date=self.release_date.isoformat(), 
+            producer=self.producer.as_json(),
+            actors= [ob.as_json() for ob in self.actors.all()])
+
 
     class Meta:
         db_table = 'film'

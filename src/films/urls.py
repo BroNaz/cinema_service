@@ -1,9 +1,9 @@
 
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 from . import views
 
 urlpatterns = [
-    path('', views.FilmsView.as_view(), name='films'),
-    path('popular', views.get_popular_movies)
+    re_path('$', views.JsonViewMovies.as_view()),
+    path('popular', views.JsonViewPopularMovies.as_view())
 ]
