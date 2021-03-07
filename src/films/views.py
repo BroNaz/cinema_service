@@ -5,6 +5,7 @@ from django.views import generic
 from django.core import serializers # вроде как его используют для сериализации, необходимо затестить
 from django.views import View
 from django.core import serializers
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Film
 
@@ -23,11 +24,27 @@ class JsonViewMovies(View):
     director -> str 
     year -> str (YYYY-MM-DD)
     """
+    YOUR_PAGE_SIZE = 10
     def get(self, request):
         """v0 - вернем пока что все фильмы"""
         resultset = Film.objects.all()
         results = [ob.as_json() for ob in resultset]
-        return HttpResponse(json.dumps(results), content_type="application/json")
+
+        paginator = Paginator(results, self.YOUR_PAGE_SIZE)
+        
+        res_paginator = None
+        page = request.GET.get('pagination')
+        try:
+            res_paginator = paginator.page(page)
+        except PageNotAnInteger:
+            res_paginator = paginator.page(1)
+        except EmptyPage:
+            res_paginator = paginator.page(paginator.num_pages)
+
+        data = {'films' : res_paginator.object_list}
+        data['page_count'] = paginator.num_pages
+        res_response = json.dumps(data)
+        return HttpResponse(res_response, content_type="application/json")
 
 
 class JsonViewPopularMovies(View):
