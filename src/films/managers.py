@@ -14,14 +14,16 @@ class FilmManager():
                 if param == 'actor':
                     item = person_preparation(item)
                     films = films\
-                    .filter(actors__name__contains=item[0])\
-                    .filter(actors__last_name__contains=item[1])\
+                    .filter(actors__name__contains=item[0])
+                    if item[1] != '':
+                        films = films.filter(actors__last_name__contains=item[1])
 
                 elif param == 'producer':
                     item = person_preparation(item)
                     films = films\
-                    .filter(producer__name__contains=item[0])\
-                    .filter(producer__last_name__contains=item[1])\
+                    .filter(producer__name__contains=item[0])
+                    if item[1] != '':
+                        films = films.filter(producer__last_name__contains=item[1])
 
                 elif param == 'year':
                     if data_check(item):
