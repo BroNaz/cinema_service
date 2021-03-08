@@ -23,7 +23,7 @@ class Film(models.Model):
     name = models.CharField('Title', max_length=255)
     release_date = models.DateField('Release date')
     producer = models.ForeignKey(to='Person', verbose_name='Producer',
-                                    on_delete=models.CASCADE, related_name='producer') # возможно придется менять to
+                                    on_delete=models.CASCADE, related_name='producer')
     actors = models.ManyToManyField(to=Person, verbose_name='Actors', related_name='actors')
 
     def __str__(self):
@@ -51,4 +51,6 @@ class FilmInfo(models.Model):
     
     class Meta:
         db_table = 'film_info'
+
+
 

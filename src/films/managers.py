@@ -1,74 +1,44 @@
+from datetime import date, datetime
+
 from .models import Film
 
 class FilmManager():
     def __init__(self, request):
         self.params = request.GET
-        self.filter_parametrs = dict()
-
-    def _filter_parser(self):
-        temp = self.request.GET.get('actor')
-        if temp != None and temp != '':
-            self.filter_parametrs['actor'] = temp
-            
-        temp = self.request.GET.get('director') 
-        if temp != None and temp != '':
-            self.filter_parametrs['director'] = temp
-
-        temp = self.request.GET.get('year')
-        if temp != None and temp != '':
-            if 'to' not in temp:
-                if data_check(temp):
-                    self.filter_parametrs['date'] = temp
-            else :
-                temp = temp.split('to',2)[0:2]
-                if data_check_range(temp):
-                    self.filter_parametrs['date_range'] = temp
 
     def get_filter(self):
         films = Film.objects
-        params = ['actor', 'director', 'year']
+        params = ['actor', 'producer', 'year']
         for param in params:
             for item in self.params.getlist(param):
                 if param == 'actor':
-                    # if check good params
-                    films = films
-                    .filter(desc__contains=filter, actors__name__contains="Foo")
-                    .filter(desc__contains=filter, actors__last_name__contains="Foo")
-                    .order_by("desc")
+                    item = person_preparation(item)
+                    films = films\
+                    .filter(actors__name__contains=item[0])\
+                    .filter(actors__last_name__contains=item[1])\
 
-                elif param == 'director':
-                    # if check good params
-                    films = films
-                    .filter(desc__contains=filter, producer__name__contains="Foo")
-                    .filter(desc__contains=filter, producer__last_name__contains="Foo")
-                    .order_by("desc")
+                elif param == 'producer':
+                    item = person_preparation(item)
+                    films = films\
+                    .filter(producer__name__contains=item[0])\
+                    .filter(producer__last_name__contains=item[1])\
 
                 elif param == 'year':
-                    films = films.filter(release_date__year='2012')
+                    if data_check(item):
+                        films = films.filter(release_date__year=item)
 
         return films
 
-
-    def __str__(self):
-        return str(self.filter_parametrs)
-
-# проверка даты по нашим правилам
 def data_check(date:str) -> bool:
-    d = datetime.strptime(date, '%Y').date()
-    return d.year >= 1900
-
-def data_check_range(dates:list) -> bool:
-    if len(dates) > 2:
+    try:
+        d = datetime.strptime(date, '%Y').date()
+        res = d.year >= 1900
+    except:
         return False
-    d1 = datetime.strptime(dates[0], '%Y').date()
-    d2 = datetime.strptime(dates[1], '%Y').date()
-    
-    return d1.year >= 1900 and d1 <= d2
+    return res 
 
-
-
-
-"""
-
-
-"""
+def person_preparation(person:str) -> list():
+    res = person.split(' ',2)
+    if len(res) < 2: 
+        res.append('')
+    return res 
