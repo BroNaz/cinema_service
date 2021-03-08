@@ -21,7 +21,7 @@ class Person(models.Model):
 class Film(models.Model):
     """information about the film"""
     name = models.CharField('Title', max_length=255)
-    release_date = models.DateField('Release data')
+    release_date = models.DateField('Release date')
     producer = models.ForeignKey(to='Person', verbose_name='Producer',
                                     on_delete=models.CASCADE, related_name='producer') # возможно придется менять to
     actors = models.ManyToManyField(to=Person, verbose_name='Actors', related_name='actors')
