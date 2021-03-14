@@ -1,6 +1,7 @@
-from datetime import date, datetime
+import datetime
 
-from .models import Film
+
+from .models import Film, FilmInfo
 
 class FilmManager():
     def __init__(self, request):
@@ -33,7 +34,7 @@ class FilmManager():
 
 def data_check(date:str) -> bool:
     try:
-        d = datetime.strptime(date, '%Y').date()
+        d = datetime.datetime.strptime(date, '%Y').date()
         res = d.year >= 1900
     except:
         return False
@@ -44,3 +45,17 @@ def person_preparation(person:str) -> list():
     if len(res) < 2: 
         res.append('')
     return res 
+
+
+class FilmInfoManager():
+
+    def __init__(self, number_of_weeks: int, default_number_of_movies: int ):
+        self.delta = datetime.timedelta(days= 7 * number_of_weeks)
+        self.default_number_of_movies = default_number_of_movies
+
+    def get_filter(self):
+        films_info = FilmInfo.objects.filter(date__gte=datetime.datetime.now() - self.delta,
+                                                date__lte=datetime.datetime.now()) 
+
+        films_info = films_info.order_by('-number_of_views')[0:self.default_number_of_movies]
+        return films_info

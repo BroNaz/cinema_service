@@ -52,5 +52,8 @@ class FilmInfo(models.Model):
     class Meta:
         db_table = 'film_info'
 
-
-
+    def as_json(self):
+        return dict(
+            film = self.film.as_json(),
+            date=self.date.isoformat(), 
+            number_of_views=self.number_of_views)
