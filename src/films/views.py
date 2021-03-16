@@ -1,14 +1,17 @@
-from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
 import json 
+import cinema_service.settings as settings
+
+from django.shortcuts import render
+from django.http import HttpResponse
 from django.views import generic
-from django.core import serializers
 from django.views import View
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, Page
 
 from .models import Film
 from .managers import FilmManager, FilmInfoManager
+from .utils import is_number
+
 
 
 class JsonViewMovies(View):
@@ -24,10 +27,8 @@ class JsonViewMovies(View):
     producer -> str 
     year -> str (YYYY)
     """
-    YOUR_PAGE_SIZE = 10
     def get(self, request):
-        """v0 - вернем пока что все фильмы"""
-        print('JsonViewMovies')
+
         resultset = FilmManager(request).get_filter().all()
         results = [ob.as_json() for ob in resultset]
 
@@ -40,7 +41,7 @@ class JsonViewMovies(View):
 
 
     def _pagination(self, request, results_list : list) -> (Page, int):
-        paginator = Paginator(results_list, self.YOUR_PAGE_SIZE)
+        paginator = Paginator(results_list, settings.PAGE_SIZE)
         
         page = request.GET.get('page')
         try:
@@ -58,14 +59,19 @@ class JsonViewMovies(View):
 
 
 class JsonViewPopularMovies(View):
-    NUMBER_OF_WEEKS = 4 
-    DEFAULT_NUMBER_OF_MOVIES = 10
+    """
+    Command to get N popular movies 
+    (select N movies with the most views in the last 4 weeks, 
+    N is passed to the command as a parameter, 4 weeks is set 
+    in the configuration)
+
+    number -> int 
+    """
     def get(self, request):
-        print('JsonViewPopularMovies')
 
         number_of_movies = self._parsing_parameters(request)
 
-        resultset = FilmInfoManager(self.NUMBER_OF_WEEKS, number_of_movies).get_filter()
+        resultset = FilmInfoManager(settings.NUMBER_OF_WEEKS, number_of_movies).get_filter()
         results = [ob.as_json() for ob in resultset]
 
         
@@ -78,14 +84,6 @@ class JsonViewPopularMovies(View):
 
         if number_of_movies == None or number_of_movies == '':
             if not is_number(number_of_movies):
-                number_of_movies = self.DEFAULT_NUMBER_OF_MOVIES
+                number_of_movies = settings.DEFAULT_NUMBER_OF_MOVIES
 
         return int(number_of_movies)
-
-
-def is_number(var):
-    try:
-        if var == int(var):
-            return True
-    except Exception:
-        return False

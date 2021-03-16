@@ -1,7 +1,7 @@
 import datetime
 
-
 from .models import Film, FilmInfo
+from .utils import data_check, person_preparation
 
 class FilmManager():
     def __init__(self, request):
@@ -32,19 +32,6 @@ class FilmManager():
 
         return films
 
-def data_check(date:str) -> bool:
-    try:
-        d = datetime.datetime.strptime(date, '%Y').date()
-        res = d.year >= 1900
-    except:
-        return False
-    return res 
-
-def person_preparation(person:str) -> list():
-    res = person.split(' ',2)
-    if len(res) < 2: 
-        res.append('')
-    return res 
 
 
 class FilmInfoManager():

@@ -122,3 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+NUMBER_OF_WEEKS = 4 
+DEFAULT_NUMBER_OF_MOVIES = 10
+PAGE_SIZE = 10
